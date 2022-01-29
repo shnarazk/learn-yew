@@ -1,11 +1,30 @@
-use yew::prelude::*;
+use yew::{classes, prelude::*};
 
 enum Msg {
     AddOne,
+    SubOne,
+}
+
+struct Header;
+
+impl Component for Header {
+    type Message = ();
+    type Properties = ();
+    fn create(_ctx: &Context<Self>) -> Self {
+        Self
+    }
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
+        false
+    }
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        html! {
+            <div class={classes!("header")}>{ "Header" }</div>
+        }
+    }
 }
 
 struct Model {
-    value: i64,
+    value: u64,
 }
 
 impl Component for Model {
@@ -13,9 +32,7 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self {
-            value: 0,
-        }
+        Self { value: 0 }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -26,6 +43,10 @@ impl Component for Model {
                 // re-render for it to appear on the page
                 true
             }
+            Msg::SubOne => {
+                self.value = self.value.saturating_sub(1);
+                true
+            }
         }
     }
 
@@ -34,8 +55,13 @@ impl Component for Model {
         let link = ctx.link();
         html! {
             <div>
-                <button onclick={link.callback(|_| Msg::AddOne)}>{ "+1" }</button>
-                <p>{ self.value }</p>
+                <Header/>
+                <div class={classes!((0 < self.value).then(|| Some("heading")))}>{ "A span" }</div>
+                <div class={classes!({"buttons"})}>
+                    <button class={classes!({"button"})} onclick={link.callback(|_| Msg::AddOne)}>{ "+ 1" }</button>
+                    <button class={classes!({"button"})} onclick={link.callback(|_| Msg::SubOne)}>{ "- 1" }</button>
+                </div>
+                <p>{ format!("The value is {}.", self.value) }</p>
             </div>
         }
     }
@@ -44,4 +70,3 @@ impl Component for Model {
 fn main() {
     yew::start_app::<Model>();
 }
-
