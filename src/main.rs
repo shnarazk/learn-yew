@@ -1,4 +1,4 @@
-use learn_yew::button::Model;
+use learn_yew::model::Model;
 
 fn main() {
     yew::start_app::<Model>();
